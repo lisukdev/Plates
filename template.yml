@@ -7,7 +7,21 @@ Resources:
     Properties:
       Handler: main
       Runtime: go1.x
-      CodeUri: function/.
+      CodeUri: lambda/function/.
+      Description: Call the AWS Lambda API
+      Timeout: 5
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+  workoutLibraryGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Runtime: go1.x
+      CodeUri: lambda/workoutLibraryGet/.
       Description: Call the AWS Lambda API
       Timeout: 5
       # Function's execution role
