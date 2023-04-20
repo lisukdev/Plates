@@ -2,50 +2,18 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/aws/aws-lambda-go/events"
+	"fmt"
 	runtime "github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/lambdacontext"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/lambda"
-	"log"
-	"os"
 )
 
-var client = lambda.New(session.New())
-
-func callLambda() (string, error) {
-	input := &lambda.GetAccountSettingsInput{}
-	req, resp := client.GetAccountSettingsRequest(input)
-	err := req.Send()
-	output, _ := json.Marshal(resp.AccountUsage)
-	return string(output), err
+type MyRequest struct {
+	Name string `json:"name"`
 }
 
-func handleRequest(ctx context.Context, event events.SQSEvent) (string, error) {
-	// event
-	eventJson, _ := json.MarshalIndent(event, "", "  ")
-	log.Printf("EVENT: %s", eventJson)
-	// environment variables
-	log.Printf("REGION: %s", os.Getenv("AWS_REGION"))
-	log.Println("ALL ENV VARS:")
-	for _, element := range os.Environ() {
-		log.Println(element)
-	}
-	// request context
+func handleRequest(ctx context.Context, request MyRequest) (string, error) {
 	lc, _ := lambdacontext.FromContext(ctx)
-	log.Printf("REQUEST ID: %s", lc.AwsRequestID)
-	// global variable
-	log.Printf("FUNCTION NAME: %s", lambdacontext.FunctionName)
-	// context method
-	deadline, _ := ctx.Deadline()
-	log.Printf("DEADLINE: %s", deadline)
-	// AWS SDK call
-	usage, err := callLambda()
-	if err != nil {
-		return "ERROR", err
-	}
-	return usage, nil
+	return fmt.Sprintf("Hello %s, yourd id is %s", request.Name, lc.Identity.CognitoIdentityID), nil
 }
 
 func main() {
