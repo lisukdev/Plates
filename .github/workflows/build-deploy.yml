@@ -1,4 +1,4 @@
-name: Terraform
+name: Build and Deploy
 
 on:
   push:
@@ -7,13 +7,12 @@ on:
   pull_request:
 
 jobs:
-  terraform:
-    name: "Terraform"
+  build-and-deploy:
+    name: "Build and Deploy"
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-        working-directory: "terraform"
     permissions:
       pull-requests: write
     steps:
