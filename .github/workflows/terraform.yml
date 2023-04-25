@@ -30,6 +30,9 @@ jobs:
         with:
           go-version: 1.20.3
 
+      - name: Make File
+        id: makefile
+        run: cat Makefile
       - name: Build lambdas
         id: build
         run: make build
