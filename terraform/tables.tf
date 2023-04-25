@@ -1,9 +1,26 @@
-resource "aws_dynamodb_table" "tf_notes_table" {
-  name         = "tf-notes-table"
+resource "aws_dynamodb_table" "workout_templates" {
+  name         = "WorkoutTemplates"
   billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
   attribute {
-    name = "noteId"
+    name = "id"
     type = "S"
   }
-  hash_key = "noteId"
+}
+
+resource "aws_dynamodb_table" "user_workout_templates" {
+  name         = "UserWorkoutTemplates"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "userId"
+  range_key    = "templateId"
+
+  attribute {
+    name = "userId"
+    type = "S"
+  }
+  attribute {
+    name = "templateId"
+    type = "S"
+  }
 }
