@@ -1,9 +1,12 @@
 package store
 
 import (
+	"github.com/google/uuid"
 	"github.com/lisukdev/Plates/pkg/domain/workout"
 )
 
 type WorkoutLibrary interface {
-	listWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error)
+	ListWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error)
+	AddWorkoutTemplate(userId string, templateWorkout workout.TemplateWorkout) (*workout.TemplateWorkout, error)
+	GetWorkoutTemplate(templateId uuid.UUID) (*workout.TemplateWorkout, error)
 }

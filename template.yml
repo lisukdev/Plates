@@ -29,4 +29,35 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - AWSLambda_ReadOnlyAccess
         - AWSXrayWriteOnlyAccess
+        - AmazonDynamoDBFullAccess
+      Tracing: Active
+  workoutLibraryGetItem:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Runtime: go1.x
+      CodeUri: lambda/workoutLibraryGetItem/.
+      Description: Call the AWS Lambda API
+      Timeout: 5
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+        - AmazonDynamoDBFullAccess
+      Tracing: Active
+  workoutLibraryPutItem:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Runtime: go1.x
+      CodeUri: lambda/workoutLibraryPutItem/.
+      Description: Call the AWS Lambda API
+      Timeout: 5
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+        - AmazonDynamoDBFullAccess
       Tracing: Active
