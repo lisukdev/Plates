@@ -5,7 +5,7 @@ data "archive_file" "function-zip" {
 }
 
 resource "aws_lambda_function" "function" {
-  function_name    = "funciton"
+  function_name    = "function"
   filename         = "../build/function.zip"
   handler          = "function"
   source_code_hash = "data.archive_file.function-zip.output_base64sha256"
