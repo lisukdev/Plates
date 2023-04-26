@@ -8,8 +8,11 @@ import (
 	"github.com/aws/aws-lambda-go/lambdacontext"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/google/uuid"
 	"github.com/lisukdev/Plates/api"
+	"github.com/lisukdev/Plates/pkg/domain/workout"
 	"github.com/lisukdev/Plates/pkg/store"
+	"time"
 )
 
 func buildClient(ctx context.Context) (*store.DynamoWorkoutLibrary, error) {
@@ -32,35 +35,50 @@ func handleError(err error) (events.APIGatewayProxyResponse, error) {
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	lc, _ := lambdacontext.FromContext(ctx)
-	library, err := buildClient(ctx)
-	if err != nil {
-		return handleError(err)
-	}
-	workouts, err := library.ListWorkoutTemplates(lc.Identity.CognitoIdentityID)
-	if err != nil {
-		return handleError(err)
-	}
-	var responseList []api.WorkoutMetadata
-	for _, workout := range workouts {
-		workoutIdString := workout.Id.String()
-		workoutVersion := int32(workout.Version)
-		responseList = append(responseList, api.WorkoutMetadata{
-			Id:      &workoutIdString,
-			Name:    &workout.Name,
-			Version: &workoutVersion,
-		})
-	}
-	responseBody, err := json.Marshal(responseList)
+	requestBodyWorkout := api.WorkoutTemplate{}
+	err := json.Unmarshal([]byte(request.Body), &requestBodyWorkout)
 	if err != nil {
 		return handleError(err)
 	}
 
+	library, err := buildClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	lc, _ := lambdacontext.FromContext(ctx)
+
+	timestamp := time.Now().Format(time.RFC3339)
+	workout := workout.TemplateWorkout{
+		Id:                uuid.UUID{},
+		Name:              *requestBodyWorkout.Name,
+		Version:           int(*requestBodyWorkout.Version),
+		Creator:           lc.Identity.CognitoIdentityID,
+		CreationTimestamp: timestamp,
+		UpdatedTimestamp:  timestamp,
+	}
+	storedTemplate, err := library.AddWorkoutTemplate(lc.Identity.CognitoIdentityID, workout)
+	if err != nil {
+		return handleError(err)
+	}
+
+	responseTemplateId := storedTemplate.Id.String()
+	responseTemplateVersion := int32(storedTemplate.Version)
+	responseTemplate := api.WorkoutTemplate{
+		Id:      &responseTemplateId,
+		Name:    &storedTemplate.Name,
+		Version: &responseTemplateVersion,
+	}
+
+	marshaledResponse, err := responseTemplate.MarshalJSON()
+	if err != nil {
+		return handleError(err)
+	}
 	return events.APIGatewayProxyResponse{
 		StatusCode:        200,
 		Headers:           nil,
 		MultiValueHeaders: nil,
-		Body:              string(responseBody),
+		Body:              string(marshaledResponse),
 		IsBase64Encoded:   false,
 	}, nil
 }
