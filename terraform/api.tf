@@ -5,7 +5,7 @@ variable "api_authorization" {
 }
 
 data "template_file" "apidef" {
-  template = file("../api/plates.yaml")
+  template = file("../openapi.yaml")
   vars = {
     aws_region = "us-east-2"
 
