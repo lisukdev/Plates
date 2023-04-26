@@ -1,0 +1,6 @@
+*.go
+.openapi-generator
+go.mod
+go.sum
+go.mod
+go.sum

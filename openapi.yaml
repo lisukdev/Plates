@@ -26,6 +26,13 @@ paths:
                   $ref: '#/components/schemas/WorkoutMetadata'
   /library/{templateId}:
     get:
+      parameters:
+        - in: path
+          name: templateId
+          schema:
+            type: string
+            format: uuid
+          required: true
       responses:
         '200':
           description: OK
