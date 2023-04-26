@@ -8,7 +8,7 @@ generate-api: clean
 		-v ${PWD}:/local openapitools/openapi-generator-cli generate \
 		-i /local/openapi.yaml \
 		-g go \
-		-c ./openapi-generator-config.json \
+		-c /local/openapi-generator-config.json \
 		-o /local/api
 build: clean generate-api
 	@mkdir build
