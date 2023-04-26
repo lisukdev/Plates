@@ -1,0 +1,88 @@
+openapi: 3.1.0
+info:
+  title: Plates API
+  description: API for Plates Backend
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /library:
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkoutMetadata'
+    post: {}
+  /library/{templateId}:
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutTemplate'
+    post:
+      parameters:
+        - in: path
+          name: templateId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkoutTemplate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutTemplate'
+
+components:
+  schemas:
+    WorkoutMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        version:
+          type: int
+    WorkoutTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        version:
+          type: int
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              sets:
+                type: int
+              reps:
+                type: int
+              weight:
+                type: int
+              rest:
+                type: int
