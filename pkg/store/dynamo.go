@@ -18,7 +18,7 @@ const (
 )
 
 type storedWorkoutLibrary struct {
-	Workouts []workout.TemplateMetadata `json:"workouts"`
+	Workouts []workout.TemplateMetadata
 }
 
 func userTemplateLibraryKey(userId string) map[string]types.AttributeValue {
@@ -34,8 +34,8 @@ type DynamoWorkoutLibrary struct {
 }
 
 type TemplateRow struct {
-	Id      string                  `json:"id"`
-	Workout workout.TemplateWorkout `json:"workout"`
+	Id      string
+	Workout workout.TemplateWorkout
 }
 
 func (library DynamoWorkoutLibrary) ListWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error) {
