@@ -43,7 +43,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	library, err := buildClient(ctx)
 	if err != nil {
-		return nil, err
+		return handleError(err)
 	}
 
 	lc, _ := lambdacontext.FromContext(ctx)

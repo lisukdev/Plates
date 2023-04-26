@@ -10,7 +10,9 @@ data "template_file" "apidef" {
     aws_region = "us-east-2"
 
     function_arn = aws_lambda_function.function.arn
-    function_arn = aws_lambda_function.workoutLibraryCreateItem.arn
+    library_get_arn = aws_lambda_function.workoutLibraryGet.arn
+    library_post_arn = aws_lambda_function.workoutLibraryCreateItem.arn
+    library_item_get_arn = aws_lambda_function.workoutLibraryGetItem.arn
   }
 }
 
