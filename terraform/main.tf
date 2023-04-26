@@ -19,6 +19,10 @@ provider "aws" {
   region = var.aws_region
 }
 
+resource "aws_api_gateway_rest_api" "api" {
+  name = "PlatesApi"
+}
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
