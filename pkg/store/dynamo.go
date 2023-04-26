@@ -26,7 +26,7 @@ func userTemplateLibraryKey(userId string) map[string]types.AttributeValue {
 }
 
 func workoutTemplatesKey(templateId uuid.UUID) map[string]types.AttributeValue {
-	return map[string]types.AttributeValue{"id": &types.AttributeValueMemberS{Value: templateId.String()}}
+	return map[string]types.AttributeValue{"Id": &types.AttributeValueMemberS{Value: templateId.String()}}
 }
 
 type DynamoWorkoutLibrary struct {
