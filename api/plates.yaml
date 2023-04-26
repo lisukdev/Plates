@@ -17,7 +17,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WorkoutMetadata'
-    post: {}
   /library/{templateId}:
     get:
       responses:
@@ -60,7 +59,7 @@ components:
         name:
           type: string
         version:
-          type: int
+          type: integer
     WorkoutTemplate:
       type: object
       properties:
@@ -70,7 +69,7 @@ components:
         name:
           type: string
         version:
-          type: int
+          type: integer
         exercises:
           type: array
           items:
@@ -79,10 +78,10 @@ components:
               name:
                 type: string
               sets:
-                type: int
+                type: integer
               reps:
-                type: int
+                type: integer
               weight:
-                type: int
+                type: integer
               rest:
-                type: int
+                type: integer
