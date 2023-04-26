@@ -23,9 +23,9 @@ jobs:
         uses: openapi-generators/openapitools-generator-action@v1
         with:
           generator: go
-          config-file: ./openapi-generator-config.yaml
-          openapi-file: ./openapi.yaml
-          command-args: -o ./api
+          config-file: openapi-generator-config.yaml
+          openapi-file: openapi.yaml
+          command-args: -o api
 
       - name: Set up Go
         uses: actions/setup-go@v4
