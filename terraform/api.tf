@@ -6,6 +6,11 @@ variable "api_authorization" {
 
 data "template_file" "apidef" {
   template = file("../api/plates.yaml")
+  vars = {
+    aws_region = "us-east-2"
+
+    function_arn = aws_lambda_function.function.arn
+  }
 }
 
 resource "aws_api_gateway_rest_api" "api" {
