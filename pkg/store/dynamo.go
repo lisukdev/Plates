@@ -34,8 +34,8 @@ type DynamoWorkoutLibrary struct {
 }
 
 type TemplateRow struct {
-	TemplateId string
-	Workout    workout.TemplateWorkout
+	Id      string                  `json:"id"`
+	Workout workout.TemplateWorkout `json:"workout"`
 }
 
 func (library DynamoWorkoutLibrary) ListWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error) {
@@ -48,7 +48,7 @@ func (library DynamoWorkoutLibrary) ListWorkoutTemplates(userId string) ([]worko
 }
 
 func (library DynamoWorkoutLibrary) AddWorkoutTemplate(userId string, templateWorkout workout.TemplateWorkout) (*workout.TemplateWorkout, error) {
-	templateRow := TemplateRow{TemplateId: templateWorkout.Id.String(), Workout: templateWorkout}
+	templateRow := TemplateRow{Id: templateWorkout.Id.String(), Workout: templateWorkout}
 	marshaledTemplateWorkout, err := attributevalue.MarshalMap(templateRow)
 	if err != nil {
 		return nil, err
