@@ -9,7 +9,7 @@ paths:
   /library:
     get:
       x-amazon-apigateway-integration:
-        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${function_arn}/invocations"
+        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${library_get_arn}/invocations"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         timeoutInMillis: 20000
@@ -24,23 +24,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WorkoutMetadata'
-  /library/{templateId}:
-    get:
-      parameters:
-        - in: path
-          name: templateId
-          schema:
-            type: string
-            format: uuid
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkoutTemplate'
     post:
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${library_post_arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        timeoutInMillis: 20000
+        type: "aws_proxy"
+        contentHandling: "CONVERT_TO_TEXT"
       parameters:
         - in: path
           name: templateId
@@ -54,6 +45,29 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/WorkoutTemplate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutTemplate'
+  /library/{templateId}:
+    get:
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${library_item_get_arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        timeoutInMillis: 20000
+        type: "aws_proxy"
+        contentHandling: "CONVERT_TO_TEXT"
+      parameters:
+        - in: path
+          name: templateId
+          schema:
+            type: string
+            format: uuid
+          required: true
       responses:
         '200':
           description: OK
