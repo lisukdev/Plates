@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/lisukdev/Plates/api"
+	"github.com/lisukdev/Plates/pkg/adapters"
 	"github.com/lisukdev/Plates/pkg/domain"
-	"github.com/lisukdev/Plates/pkg/domain/workout"
 	"github.com/lisukdev/Plates/pkg/store"
 	"log"
 )
@@ -38,48 +38,24 @@ func handleError(err error) (events.APIGatewayProxyResponse, error) {
 	}, err
 }
 
-type ApiRequest struct {
-	UserId   string
-	Template api.WorkoutTemplate
-}
-
-func (request ApiRequest) GetName() string {
-	return *request.Template.Name
-}
-func (request ApiRequest) GetCreator() string {
-	return request.UserId
-}
-func (request ApiRequest) GetExercises() []workout.TemplateExercise {
-	result := make([]workout.TemplateExercise, len(request.Template.Exercises))
-	return result
-}
-
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	lc, _ := lambdacontext.FromContext(ctx)
 
-	requestBodyWorkout := api.WorkoutTemplate{}
-	err := json.Unmarshal([]byte(request.Body), &requestBodyWorkout)
+	requestBody := api.CreateWorkoutTemplateRequest{}
+	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
 		return handleError(err)
 	}
-
-	apiRequest := ApiRequest{
-		UserId:   lc.Identity.CognitoIdentityID,
-		Template: requestBodyWorkout,
+	apiRequest := adapters.CreateWorkoutTemplateRequestAdapter{
+		UserId:  lc.Identity.CognitoIdentityID,
+		Request: &requestBody,
 	}
 
 	storedTemplate, err := service.CreateTemplateInLibrary(lc.Identity.CognitoIdentityID, apiRequest)
 	if err != nil {
 		return handleError(err)
 	}
-
-	responseTemplateId := storedTemplate.Id.String()
-	responseTemplateVersion := int32(storedTemplate.Version)
-	responseTemplate := api.WorkoutTemplate{
-		Id:      &responseTemplateId,
-		Name:    &storedTemplate.Name,
-		Version: &responseTemplateVersion,
-	}
+	responseTemplate := adapters.TemplateWorkoutToApi(storedTemplate)
 
 	marshaledResponse, err := responseTemplate.MarshalJSON()
 	if err != nil {

@@ -44,7 +44,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorkoutTemplate'
+              $ref: '#/components/schemas/CreateWorkoutTemplateRequest'
       responses:
         '200':
           description: OK
@@ -78,6 +78,16 @@ paths:
 
 components:
   schemas:
+    CreateWorkoutTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateExercise'
+
     WorkoutMetadata:
       type: object
       properties:
@@ -101,15 +111,17 @@ components:
         exercises:
           type: array
           items:
-            type: object
-            properties:
-              name:
-                type: string
-              sets:
-                type: integer
-              reps:
-                type: integer
-              weight:
-                type: integer
-              rest:
-                type: integer
+            $ref: '#/components/schemas/TemplateExercise'
+    TemplateExercise:
+      type: object
+      properties:
+        name:
+          type: string
+        sets:
+          type: integer
+        reps:
+          type: integer
+        weight:
+          type: integer
+        rest:
+          type: integer
