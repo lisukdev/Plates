@@ -50,7 +50,7 @@ resource "aws_iam_role_policy" "dynamodb-lambda-policy" {
       {
         "Effect" : "Allow",
         "Action" : ["dynamodb:*"],
-        "Resource" : aws_dynamodb_table.user_workout_templates.arn
+        "Resource" : aws_dynamodb_table.workout_template_libraries.arn
       },
       {
         "Effect" : "Allow",
