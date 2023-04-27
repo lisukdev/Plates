@@ -1,6 +1,37 @@
 package workout
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
+
+func NewTemplate(name string, creator string, exercises []TemplateExercise) (*TemplateWorkout, error) {
+	id, err := uuid.NewRandom()
+	timestamp := time.Now().Format(time.RFC3339)
+	if err != nil {
+		return nil, err
+	}
+	return &TemplateWorkout{
+		Id:                id,
+		Name:              name,
+		Version:           0,
+		Creator:           creator,
+		CreationTimestamp: timestamp,
+		UpdatedTimestamp:  timestamp,
+		Exercises:         exercises,
+	}, nil
+}
+
+func (t TemplateWorkout) Metadata() TemplateMetadata {
+	return TemplateMetadata{
+		Id:                t.Id,
+		Name:              t.Name,
+		Version:           t.Version,
+		Creator:           t.Creator,
+		CreationTimestamp: t.CreationTimestamp,
+		UpdatedTimestamp:  t.UpdatedTimestamp,
+	}
+}
 
 type TemplateMetadata struct {
 	Id                uuid.UUID `json:"id"`
