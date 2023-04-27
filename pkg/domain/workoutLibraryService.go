@@ -21,25 +21,13 @@ func (service *WorkoutLibraryService) CreateTemplateInLibrary(libraryId string, 
 	if err != nil {
 		return nil, err
 	}
-	_, err = service.WorkoutLibraryRepository.AddWorkoutTemplate(libraryId, *newTemplate)
-	if err != nil {
-		return nil, err
-	}
-	return newTemplate, nil
+	return service.WorkoutLibraryRepository.AddWorkoutTemplate(libraryId, *newTemplate)
 }
 
 func (service *WorkoutLibraryService) GetTemplate(templateId uuid.UUID) (*workout.TemplateWorkout, error) {
-	result, err := service.WorkoutLibraryRepository.GetWorkoutTemplate(templateId)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return service.WorkoutLibraryRepository.GetWorkoutTemplate(templateId)
 }
 
 func (service *WorkoutLibraryService) ListTemplates(libraryId string) ([]workout.TemplateMetadata, error) {
-	result, err := service.WorkoutLibraryRepository.ListWorkoutTemplates(libraryId)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return service.WorkoutLibraryRepository.ListWorkoutTemplates(libraryId)
 }
