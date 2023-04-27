@@ -47,8 +47,8 @@ func makeMockRow(
 }
 
 func TestListAllItems(t *testing.T) {
-	uuid1, _ := uuid.Parse("3be34021-44bd-45b0-a3e0-c072f5a92f10")
-	uuid2, _ := uuid.Parse("36d39b9d-d77d-4854-a634-1036a74e6926")
+	uuid1 := uuid.MustParse("3be34021-44bd-45b0-a3e0-c072f5a92f10")
+	uuid2 := uuid.MustParse("36d39b9d-d77d-4854-a634-1036a74e6926")
 	client := &mockDynamoDBClient{
 		data: []map[string]types.AttributeValue{
 			makeMockRow(uuid1.String(), 1, "Test 1", "Test User 1", "2021-01-01", "2021-01-01"),
