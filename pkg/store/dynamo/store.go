@@ -8,6 +8,7 @@ import (
 	"github.com/lisukdev/Plates/pkg/domain/workout"
 	"github.com/lisukdev/Plates/pkg/store/dynamo/workoutTemplateLibraries"
 	"github.com/lisukdev/Plates/pkg/store/dynamo/workoutTemplates"
+	"log"
 )
 
 type DynamoWorkoutLibrary struct {
@@ -32,6 +33,7 @@ func (library DynamoWorkoutLibrary) AddWorkoutTemplate(libraryId uuid.UUID, temp
 		return nil, err
 	}
 	txn = append(txn, *putMetadata)
+	log.Printf("Transaction: %+v", txn)
 
 	_, err = library.DynamoDbClient.TransactWriteItems(context.TODO(), &dynamodb.TransactWriteItemsInput{TransactItems: txn})
 	if err != nil {
