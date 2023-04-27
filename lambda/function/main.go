@@ -3,26 +3,36 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	runtime "github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-lambda-go/lambdacontext"
+	"github.com/lisukdev/Plates/pkg/adapters"
 )
 
-type MyRequest struct {
-	Name string `json:"name"`
+func handleError(err error) (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{
+		StatusCode:        500,
+		Headers:           nil,
+		MultiValueHeaders: nil,
+		Body:              err.Error(),
+		IsBase64Encoded:   false,
+	}, err
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	requestBody := MyRequest{}
-	json.Unmarshal([]byte(request.Body), &requestBody)
-	lc, _ := lambdacontext.FromContext(ctx)
-	responseBody := fmt.Sprintf("Hello %s, yourd id is %s", requestBody.Name, lc.Identity.CognitoIdentityID)
+	user, err := adapters.GetUser(&request.RequestContext)
+	if err != nil {
+		return handleError(err)
+	}
+	responseBody, err := json.Marshal(user)
+	if err != nil {
+		return handleError(err)
+	}
+
 	return events.APIGatewayProxyResponse{
 		StatusCode:        200,
 		Headers:           nil,
 		MultiValueHeaders: nil,
-		Body:              responseBody,
+		Body:              string(responseBody),
 		IsBase64Encoded:   false,
 	}, nil
 }
