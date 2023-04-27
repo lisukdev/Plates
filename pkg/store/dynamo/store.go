@@ -30,7 +30,7 @@ func (library DynamoWorkoutLibrary) AddWorkoutTemplate(libraryId uuid.UUID, temp
 		return nil, err
 	}
 
-	txn := [...]types.TransactWriteItem{*putTemplate, *putMetadata}
+	txn := []types.TransactWriteItem{*putTemplate, *putMetadata}
 	log.Printf("Transaction: %+v", txn)
 
 	_, err = library.DynamoDbClient.TransactWriteItems(context.TODO(), &dynamodb.TransactWriteItemsInput{TransactItems: txn})
