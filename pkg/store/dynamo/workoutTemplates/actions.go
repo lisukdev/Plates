@@ -7,10 +7,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
+	"github.com/lisukdev/Plates/pkg/domain/interfaces"
 	"github.com/lisukdev/Plates/pkg/domain/workout"
+	"log"
 )
 
-func ListAllItems(client *dynamodb.Client) ([]workout.TemplateMetadata, error) {
+func ListAllItems(client interfaces.DbScanner) ([]workout.TemplateMetadata, error) {
 	out, err := client.Scan(context.TODO(), &dynamodb.ScanInput{
 		TableName: tableName,
 	})
@@ -19,8 +21,11 @@ func ListAllItems(client *dynamodb.Client) ([]workout.TemplateMetadata, error) {
 	}
 	var templateWorkouts = make([]workout.TemplateMetadata, 0)
 	for _, item := range out.Items {
+		log.Printf("Found item: %v", item)
 		unMarshaledTemplateWorkout := storedTemplateWorkout{}
+		log.Printf("Pre unmarshalled item: %v", unMarshaledTemplateWorkout)
 		err = attributevalue.UnmarshalMap(item, &unMarshaledTemplateWorkout)
+		log.Printf("Unmarshalled item: %v", unMarshaledTemplateWorkout)
 		if err != nil {
 			return nil, err
 		}
@@ -30,10 +35,11 @@ func ListAllItems(client *dynamodb.Client) ([]workout.TemplateMetadata, error) {
 		}
 		templateWorkouts = append(templateWorkouts, *templateWorkout.Metadata())
 	}
+	log.Printf("Final map: %v", templateWorkouts)
 	return templateWorkouts, nil
 }
 
-func GetItem(client *dynamodb.Client, templateId uuid.UUID) (*workout.TemplateWorkout, error) {
+func GetItem(client interfaces.DbGetter, templateId uuid.UUID) (*workout.TemplateWorkout, error) {
 	key := map[string]types.AttributeValue{"Id": &types.AttributeValueMemberS{Value: templateId.String()}}
 
 	out, err := client.GetItem(context.TODO(), &dynamodb.GetItemInput{

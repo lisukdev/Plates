@@ -3,13 +3,17 @@ clean:
 	@rm -rf api/.openapi-generator
 	@rm -rf build
 
-generate-api: clean
+generate-api:
 	@docker run --rm \
 		-v ${PWD}:/local openapitools/openapi-generator-cli generate \
 		-i /local/openapi.yaml \
 		-g go \
 		-c /local/openapi-generator-config.json \
 		-o /local/api
+
+test: generate-api
+	go test ./...
+
 build: clean generate-api
 	@mkdir build
 	@for dir in `ls lambda`; do \

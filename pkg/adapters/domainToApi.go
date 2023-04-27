@@ -17,10 +17,19 @@ func TemplateWorkoutToApi(workout *workout.TemplateWorkout) api.WorkoutTemplate 
 
 func TemplateMetadataToApi(metadata *workout.TemplateMetadata) api.WorkoutMetadata {
 	idString := metadata.Id.String()
+	nameString := metadata.Name
 	versionInt := int32(metadata.Version)
 	return api.WorkoutMetadata{
 		Id:      &idString,
-		Name:    &metadata.Name,
+		Name:    &nameString,
 		Version: &versionInt,
 	}
+}
+
+func TemplateMetadataListToApiList(metadataList []workout.TemplateMetadata) []api.WorkoutMetadata {
+	var apiList []api.WorkoutMetadata
+	for _, metadata := range metadataList {
+		apiList = append(apiList, TemplateMetadataToApi(&metadata))
+	}
+	return apiList
 }
