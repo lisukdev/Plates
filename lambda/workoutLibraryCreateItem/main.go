@@ -8,20 +8,24 @@ import (
 	"github.com/aws/aws-lambda-go/lambdacontext"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/google/uuid"
 	"github.com/lisukdev/Plates/api"
-	"github.com/lisukdev/Plates/pkg/domain/workout"
-	"github.com/lisukdev/Plates/pkg/store"
-	"time"
+	"github.com/lisukdev/Plates/pkg/adapters"
+	"github.com/lisukdev/Plates/pkg/domain"
+	"github.com/lisukdev/Plates/pkg/store/dynamo"
+	"log"
 )
 
-func buildClient(ctx context.Context) (*store.DynamoWorkoutLibrary, error) {
-	myConfig, err := config.LoadDefaultConfig(ctx)
+var service domain.WorkoutLibraryService
+
+func init() {
+	myConfig, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	client := dynamodb.NewFromConfig(myConfig)
-	return &store.DynamoWorkoutLibrary{DynamoDbClient: client}, nil
+	service = domain.WorkoutLibraryService{
+		WorkoutLibraryRepository: dynamo.DynamoWorkoutLibrary{DynamoDbClient: client},
+	}
 }
 
 func handleError(err error) (events.APIGatewayProxyResponse, error) {
@@ -35,45 +39,29 @@ func handleError(err error) (events.APIGatewayProxyResponse, error) {
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	requestBodyWorkout := api.WorkoutTemplate{}
-	err := json.Unmarshal([]byte(request.Body), &requestBodyWorkout)
-	if err != nil {
-		return handleError(err)
-	}
-
-	library, err := buildClient(ctx)
-	if err != nil {
-		return handleError(err)
-	}
-
 	lc, _ := lambdacontext.FromContext(ctx)
 
-	timestamp := time.Now().Format(time.RFC3339)
-	workout := workout.TemplateWorkout{
-		Id:                uuid.UUID{},
-		Name:              *requestBodyWorkout.Name,
-		Version:           int(*requestBodyWorkout.Version),
-		Creator:           lc.Identity.CognitoIdentityID,
-		CreationTimestamp: timestamp,
-		UpdatedTimestamp:  timestamp,
-	}
-	storedTemplate, err := library.AddWorkoutTemplate(lc.Identity.CognitoIdentityID, workout)
+	requestBody := api.CreateWorkoutTemplateRequest{}
+	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
 		return handleError(err)
 	}
-
-	responseTemplateId := storedTemplate.Id.String()
-	responseTemplateVersion := int32(storedTemplate.Version)
-	responseTemplate := api.WorkoutTemplate{
-		Id:      &responseTemplateId,
-		Name:    &storedTemplate.Name,
-		Version: &responseTemplateVersion,
+	apiRequest := adapters.CreateWorkoutTemplateRequestAdapter{
+		UserId:  lc.Identity.CognitoIdentityID,
+		Request: &requestBody,
 	}
 
+	createdTemplate, err := service.CreateTemplateInLibrary(lc.Identity.CognitoIdentityID, apiRequest)
+
+	if err != nil {
+		return handleError(err)
+	}
+	responseTemplate := adapters.TemplateWorkoutToApi(createdTemplate)
 	marshaledResponse, err := responseTemplate.MarshalJSON()
 	if err != nil {
 		return handleError(err)
 	}
+
 	return events.APIGatewayProxyResponse{
 		StatusCode:        200,
 		Headers:           nil,
