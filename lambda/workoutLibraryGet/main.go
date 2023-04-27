@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambdacontext"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/lisukdev/Plates/api"
 	"github.com/lisukdev/Plates/pkg/adapters"
 	"github.com/lisukdev/Plates/pkg/domain"
 	"github.com/lisukdev/Plates/pkg/store/dynamo"
@@ -46,10 +45,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return handleError(err)
 	}
 
-	var responseList []api.WorkoutMetadata
-	for _, metadata := range domainList {
-		responseList = append(responseList, adapters.TemplateMetadataToApi(&metadata))
-	}
+	responseList := adapters.TemplateMetadataListToApiList(domainList)
 	responseBody, err := json.Marshal(responseList)
 	if err != nil {
 		return handleError(err)
