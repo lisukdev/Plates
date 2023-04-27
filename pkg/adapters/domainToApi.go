@@ -14,3 +14,13 @@ func TemplateWorkoutToApi(workout *workout.TemplateWorkout) api.WorkoutTemplate 
 		Version: &versionInt,
 	}
 }
+
+func TemplateMetadataToApi(metadata *workout.TemplateMetadata) api.WorkoutMetadata {
+	idString := metadata.Id.String()
+	versionInt := int32(metadata.Version)
+	return api.WorkoutMetadata{
+		Id:      &idString,
+		Name:    &metadata.Name,
+		Version: &versionInt,
+	}
+}

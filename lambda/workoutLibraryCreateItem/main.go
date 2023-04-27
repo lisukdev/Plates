@@ -11,7 +11,7 @@ import (
 	"github.com/lisukdev/Plates/api"
 	"github.com/lisukdev/Plates/pkg/adapters"
 	"github.com/lisukdev/Plates/pkg/domain"
-	"github.com/lisukdev/Plates/pkg/store"
+	"github.com/lisukdev/Plates/pkg/store/dynamo"
 	"log"
 )
 
@@ -24,7 +24,7 @@ func init() {
 	}
 	client := dynamodb.NewFromConfig(myConfig)
 	service = domain.WorkoutLibraryService{
-		WorkoutLibraryRepository: store.DynamoWorkoutLibrary{DynamoDbClient: client},
+		WorkoutLibraryRepository: dynamo.DynamoWorkoutLibrary{DynamoDbClient: client},
 	}
 }
 
@@ -51,16 +51,17 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		Request: &requestBody,
 	}
 
-	storedTemplate, err := service.CreateTemplateInLibrary(lc.Identity.CognitoIdentityID, apiRequest)
+	createdTemplate, err := service.CreateTemplateInLibrary(lc.Identity.CognitoIdentityID, apiRequest)
+
 	if err != nil {
 		return handleError(err)
 	}
-	responseTemplate := adapters.TemplateWorkoutToApi(storedTemplate)
-
+	responseTemplate := adapters.TemplateWorkoutToApi(createdTemplate)
 	marshaledResponse, err := responseTemplate.MarshalJSON()
 	if err != nil {
 		return handleError(err)
 	}
+
 	return events.APIGatewayProxyResponse{
 		StatusCode:        200,
 		Headers:           nil,

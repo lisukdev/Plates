@@ -7,6 +7,6 @@ import (
 
 type WorkoutLibrary interface {
 	ListWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error)
-	AddWorkoutTemplate(userId string, templateWorkout workout.TemplateWorkout) (*workout.TemplateWorkout, error)
+	AddWorkoutTemplate(userId string, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error)
 	GetWorkoutTemplate(templateId uuid.UUID) (*workout.TemplateWorkout, error)
 }

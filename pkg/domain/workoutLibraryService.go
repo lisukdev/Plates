@@ -21,7 +21,7 @@ func (service *WorkoutLibraryService) CreateTemplateInLibrary(libraryId string, 
 	if err != nil {
 		return nil, err
 	}
-	return service.WorkoutLibraryRepository.AddWorkoutTemplate(libraryId, *newTemplate)
+	return service.WorkoutLibraryRepository.AddWorkoutTemplate(libraryId, newTemplate)
 }
 
 func (service *WorkoutLibraryService) GetTemplate(templateId uuid.UUID) (*workout.TemplateWorkout, error) {

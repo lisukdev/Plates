@@ -65,9 +65,9 @@ func PutItem(client *dynamodb.Client, templateWorkout *workout.TemplateWorkout) 
 		return nil, err
 	}
 	out, err := client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName:           tableName,
-		Item:                marshaledTemplateWorkout,
-,	})
+		TableName: tableName,
+		Item:      marshaledTemplateWorkout,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +88,8 @@ func TransactionPutItem(item *workout.TemplateWorkout) (*types.TransactWriteItem
 	}
 
 	putRequest := types.Put{
-		TableName:                           tableName,
-		Item:                                marshaledTemplateWorkout,
+		TableName: tableName,
+		Item:      marshaledTemplateWorkout,
 	}
 	return &types.TransactWriteItem{Put: &putRequest}, nil
 }
