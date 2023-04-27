@@ -20,19 +20,17 @@ func (library DynamoWorkoutLibrary) ListWorkoutTemplates(libraryId uuid.UUID) ([
 }
 
 func (library DynamoWorkoutLibrary) AddWorkoutTemplate(libraryId uuid.UUID, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error) {
-	txn := make([]types.TransactWriteItem, 2)
-
 	putTemplate, err := workoutTemplates.TransactionPutItem(templateWorkout)
 	if err != nil {
 		return nil, err
 	}
-	txn = append(txn, *putTemplate)
 
 	putMetadata, err := workoutTemplateLibraries.TransactionPutItem(libraryId, templateWorkout.Metadata())
 	if err != nil {
 		return nil, err
 	}
-	txn = append(txn, *putMetadata)
+
+	txn := []types.TransactWriteItem{*putTemplate, *putMetadata}
 	log.Printf("Transaction: %+v", txn)
 
 	_, err = library.DynamoDbClient.TransactWriteItems(context.TODO(), &dynamodb.TransactWriteItemsInput{TransactItems: txn})
