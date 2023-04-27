@@ -17,7 +17,7 @@ func ListAllItems(client *dynamodb.Client) ([]workout.TemplateMetadata, error) {
 	if err != nil {
 		return nil, err
 	}
-	var templateWorkouts = make([]workout.TemplateMetadata, len(out.Items))
+	var templateWorkouts = make([]workout.TemplateMetadata, 0)
 	for _, item := range out.Items {
 		unMarshaledTemplateWorkout := storedTemplateWorkout{}
 		err = attributevalue.UnmarshalMap(item, &unMarshaledTemplateWorkout)
