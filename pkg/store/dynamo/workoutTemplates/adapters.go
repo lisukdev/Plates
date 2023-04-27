@@ -6,8 +6,8 @@ import (
 	"github.com/lisukdev/Plates/pkg/domain/workout"
 )
 
-func toStored(workout *workout.TemplateWorkout) storedTemplateWorkout {
-	return storedTemplateWorkout{
+func toStored(workout *workout.TemplateWorkout) *storedTemplateWorkout {
+	return &storedTemplateWorkout{
 		Id:                workout.Id.String(),
 		SchemaVersion:     currentSchemaVersion,
 		ObjectVersion:     workout.Version,
@@ -18,7 +18,7 @@ func toStored(workout *workout.TemplateWorkout) storedTemplateWorkout {
 	}
 }
 
-func toDomain(stored storedTemplateWorkout) (*workout.TemplateWorkout, error) {
+func toDomain(stored *storedTemplateWorkout) (*workout.TemplateWorkout, error) {
 	if stored.SchemaVersion != currentSchemaVersion {
 		return nil, errors.New("Schema version mismatch")
 	}

@@ -24,11 +24,11 @@ func ListAllItems(client *dynamodb.Client) ([]workout.TemplateMetadata, error) {
 		if err != nil {
 			return nil, err
 		}
-		templateWorkout, err := toDomain(unMarshaledTemplateWorkout)
+		templateWorkout, err := toDomain(&unMarshaledTemplateWorkout)
 		if err != nil {
 			return nil, err
 		}
-		templateWorkouts = append(templateWorkouts, templateWorkout.Metadata())
+		templateWorkouts = append(templateWorkouts, *templateWorkout.Metadata())
 	}
 	return templateWorkouts, nil
 }
@@ -55,29 +55,7 @@ func GetItem(client *dynamodb.Client, templateId uuid.UUID) (*workout.TemplateWo
 		return nil, err
 	}
 
-	return toDomain(unMarshaledTemplateWorkout)
-}
-
-func PutItem(client *dynamodb.Client, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error) {
-	row := toStored(templateWorkout)
-	marshaledTemplateWorkout, err := attributevalue.MarshalMap(row)
-	if err != nil {
-		return nil, err
-	}
-	out, err := client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: tableName,
-		Item:      marshaledTemplateWorkout,
-	})
-	if err != nil {
-		return nil, err
-	}
-	unMarshaledTemplateWorkout := storedTemplateWorkout{}
-	err = attributevalue.UnmarshalMap(out.Attributes, &unMarshaledTemplateWorkout)
-	if err != nil {
-		return nil, err
-	}
-	return toDomain(unMarshaledTemplateWorkout)
-
+	return toDomain(&unMarshaledTemplateWorkout)
 }
 
 func TransactionPutItem(item *workout.TemplateWorkout) (*types.TransactWriteItem, error) {

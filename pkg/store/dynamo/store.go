@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
 	"github.com/lisukdev/Plates/pkg/domain/workout"
+	"github.com/lisukdev/Plates/pkg/store/dynamo/workoutTemplateLibraries"
 	"github.com/lisukdev/Plates/pkg/store/dynamo/workoutTemplates"
 )
 
@@ -13,18 +14,25 @@ type DynamoWorkoutLibrary struct {
 	DynamoDbClient *dynamodb.Client
 }
 
-func (library DynamoWorkoutLibrary) ListWorkoutTemplates(userId string) ([]workout.TemplateMetadata, error) {
+func (library DynamoWorkoutLibrary) ListWorkoutTemplates(libraryId uuid.UUID) ([]workout.TemplateMetadata, error) {
 	return workoutTemplates.ListAllItems(library.DynamoDbClient)
 }
 
-func (library DynamoWorkoutLibrary) AddWorkoutTemplate(userId string, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error) {
-	txn := make([]types.TransactWriteItem, 1)
+func (library DynamoWorkoutLibrary) AddWorkoutTemplate(libraryId uuid.UUID, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error) {
+	txn := make([]types.TransactWriteItem, 2)
 
-	putItem, err := workoutTemplates.TransactionPutItem(templateWorkout)
+	putTemplate, err := workoutTemplates.TransactionPutItem(templateWorkout)
 	if err != nil {
 		return nil, err
 	}
-	txn = append(txn, *putItem)
+	txn = append(txn, *putTemplate)
+
+	putMetadata, err := workoutTemplateLibraries.TransactionPutItem(libraryId, templateWorkout.Metadata())
+	if err != nil {
+		return nil, err
+	}
+	txn = append(txn, *putMetadata)
+
 	_, err = library.DynamoDbClient.TransactWriteItems(context.TODO(), &dynamodb.TransactWriteItemsInput{TransactItems: txn})
 	if err != nil {
 		return nil, err

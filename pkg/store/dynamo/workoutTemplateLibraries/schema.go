@@ -1,13 +1,14 @@
-package workoutTemplates
+package workoutTemplateLibraries
 
 import "github.com/aws/aws-sdk-go-v2/aws"
 
-var tableName = aws.String("WorkoutTemplates")
+var tableName = aws.String("WorkoutTemplateLibraries")
 
 const currentSchemaVersion = 0
 
-type storedTemplateWorkout struct {
-	Id            string
+type storedRow struct {
+	LibraryId     string
+	TemplateId    string
 	SchemaVersion int
 	ObjectVersion int
 
@@ -15,8 +16,4 @@ type storedTemplateWorkout struct {
 	Creator           string
 	CreationTimestamp string
 	UpdatedTimestamp  string
-	Exercises         []storedTemplateWorkout
-}
-
-type storedTemplateExercise struct {
 }

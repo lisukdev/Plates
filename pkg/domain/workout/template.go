@@ -22,8 +22,8 @@ func NewTemplate(name string, creator string, exercises []TemplateExercise) (*Te
 	}, nil
 }
 
-func (t TemplateWorkout) Metadata() TemplateMetadata {
-	return TemplateMetadata{
+func (t TemplateWorkout) Metadata() *TemplateMetadata {
+	return &TemplateMetadata{
 		Id:                t.Id,
 		Name:              t.Name,
 		Version:           t.Version,
