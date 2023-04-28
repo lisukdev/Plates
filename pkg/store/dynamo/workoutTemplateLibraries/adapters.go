@@ -11,6 +11,7 @@ func toStored(libraryId uuid.UUID, metadata *workout.TemplateMetadata) *storedRo
 		LibraryId:         libraryId.String(),
 		TemplateId:        metadata.Id.String(),
 		SchemaVersion:     currentSchemaVersion,
+		Name:              metadata.Name,
 		ObjectVersion:     metadata.Version,
 		Creator:           metadata.Creator,
 		CreationTimestamp: metadata.CreationTimestamp,
@@ -18,7 +19,7 @@ func toStored(libraryId uuid.UUID, metadata *workout.TemplateMetadata) *storedRo
 	}
 }
 
-func toDomain(stored storedRow) (*workout.TemplateWorkout, error) {
+func toDomain(stored *storedRow) (*workout.TemplateMetadata, error) {
 	if stored.SchemaVersion != currentSchemaVersion {
 		return nil, errors.New("Schema version mismatch")
 	}
@@ -26,7 +27,7 @@ func toDomain(stored storedRow) (*workout.TemplateWorkout, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &workout.TemplateWorkout{
+	return &workout.TemplateMetadata{
 		Id:                domainId,
 		Name:              stored.Name,
 		Version:           stored.ObjectVersion,

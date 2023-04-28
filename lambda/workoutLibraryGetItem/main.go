@@ -37,13 +37,18 @@ func handleError(err error) (events.APIGatewayProxyResponse, error) {
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	user, err := adapters.GetUser(&request.RequestContext)
+	if err != nil {
+		return handleError(err)
+	}
+
 	templateId := request.PathParameters["templateId"]
 	templateUuid, err := uuid.Parse(templateId)
 	if err != nil {
 		return handleError(err)
 	}
 
-	template, err := service.GetTemplate(templateUuid)
+	template, err := service.GetTemplate(user, templateUuid)
 
 	if err != nil {
 		return handleError(err)
