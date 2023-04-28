@@ -6,22 +6,30 @@ info:
 servers:
   - url: 'https'
 paths:
-  /users/me:
+  /auth/me:
     get:
       x-amazon-apigateway-integration:
-        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${function_arn}/invocations"
+        uri: "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${auth_me_arn}/invocations"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         timeoutInMillis: 20000
         type: "aws_proxy"
         contentHandling: "CONVERT_TO_TEXT"
+      security:
+        - CognitoUserPoolAuthorizer: [ ]
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
 
   /library:
     get:
@@ -32,6 +40,8 @@ paths:
         timeoutInMillis: 20000
         type: "aws_proxy"
         contentHandling: "CONVERT_TO_TEXT"
+      security:
+        - CognitoUserPoolAuthorizer: [ ]
       responses:
         '200':
           description: OK
@@ -49,6 +59,8 @@ paths:
         timeoutInMillis: 20000
         type: "aws_proxy"
         contentHandling: "CONVERT_TO_TEXT"
+      security:
+        - CognitoUserPoolAuthorizer: [ ]
       parameters:
         - in: path
           name: templateId
@@ -78,6 +90,8 @@ paths:
         timeoutInMillis: 20000
         type: "aws_proxy"
         contentHandling: "CONVERT_TO_TEXT"
+      security:
+        - CognitoUserPoolAuthorizer: [ ]
       parameters:
         - in: path
           name: templateId
@@ -94,6 +108,16 @@ paths:
                 $ref: '#/components/schemas/WorkoutTemplate'
 
 components:
+  securitySchemes:
+    CognitoUserPoolAuthorizer:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "cognito_user_pools"
+      x-amazon-apigateway-authorizer:
+        providerARNs:
+          - "${cognito_user_pool_arn}"
+        type: "cognito_user_pools"
   schemas:
     CreateWorkoutTemplateRequest:
       type: object

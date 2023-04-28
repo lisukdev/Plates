@@ -7,9 +7,10 @@ variable "api_authorization" {
 data "template_file" "apidef" {
   template = file("../openapi.yaml")
   vars = {
-    aws_region = "us-east-2"
+    aws_region            = "us-east-2"
+    cognito_user_pool_arn = aws_cognito_user_pool.user_pool.arn
 
-    function_arn         = aws_lambda_function.function.arn
+    auth_me_arn          = aws_lambda_function.authMe.arn
     library_get_arn      = aws_lambda_function.workoutLibraryGet.arn
     library_post_arn     = aws_lambda_function.workoutLibraryCreateItem.arn
     library_item_get_arn = aws_lambda_function.workoutLibraryGetItem.arn
