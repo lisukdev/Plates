@@ -9,35 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lisukdev/Plates/pkg/domain/interfaces"
 	"github.com/lisukdev/Plates/pkg/domain/workout"
-	"log"
 )
-
-func ListAllItems(client interfaces.DbScanner) ([]workout.TemplateMetadata, error) {
-	out, err := client.Scan(context.TODO(), &dynamodb.ScanInput{
-		TableName: tableName,
-	})
-	if err != nil {
-		return nil, err
-	}
-	var templateWorkouts = make([]workout.TemplateMetadata, 0)
-	for _, item := range out.Items {
-		log.Printf("Found item: %v", item)
-		unMarshaledTemplateWorkout := storedTemplateWorkout{}
-		log.Printf("Pre unmarshalled item: %v", unMarshaledTemplateWorkout)
-		err = attributevalue.UnmarshalMap(item, &unMarshaledTemplateWorkout)
-		log.Printf("Unmarshalled item: %v", unMarshaledTemplateWorkout)
-		if err != nil {
-			return nil, err
-		}
-		templateWorkout, err := toDomain(&unMarshaledTemplateWorkout)
-		if err != nil {
-			return nil, err
-		}
-		templateWorkouts = append(templateWorkouts, *templateWorkout.Metadata())
-	}
-	log.Printf("Final map: %v", templateWorkouts)
-	return templateWorkouts, nil
-}
 
 func GetItem(client interfaces.DbGetter, templateId uuid.UUID) (*workout.TemplateWorkout, error) {
 	key := map[string]types.AttributeValue{"Id": &types.AttributeValueMemberS{Value: templateId.String()}}

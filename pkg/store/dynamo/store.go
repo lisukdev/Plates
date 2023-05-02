@@ -16,7 +16,7 @@ type DynamoWorkoutLibrary struct {
 }
 
 func (library DynamoWorkoutLibrary) ListWorkoutTemplates(libraryId uuid.UUID) ([]workout.TemplateMetadata, error) {
-	return workoutTemplates.ListAllItems(library.DynamoDbClient)
+	return workoutTemplateLibraries.ListLibraryItems(library.DynamoDbClient, libraryId)
 }
 
 func (library DynamoWorkoutLibrary) AddWorkoutTemplate(libraryId uuid.UUID, templateWorkout *workout.TemplateWorkout) (*workout.TemplateWorkout, error) {

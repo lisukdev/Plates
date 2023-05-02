@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	runtime "github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-lambda-go/lambdacontext"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/lisukdev/Plates/pkg/adapters"
@@ -38,9 +37,12 @@ func handleError(err error) (events.APIGatewayProxyResponse, error) {
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	lc, _ := lambdacontext.FromContext(ctx)
+	user, err := adapters.GetUser(&request.RequestContext)
+	if err != nil {
+		return handleError(err)
+	}
 
-	domainList, err := service.ListTemplates(lc.Identity.CognitoIdentityID)
+	domainList, err := service.ListTemplates(user)
 	if err != nil {
 		return handleError(err)
 	}

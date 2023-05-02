@@ -5,6 +5,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
+type DbQueryer interface {
+	Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error)
+}
+
 type DbScanner interface {
 	Scan(ctx context.Context, params *dynamodb.ScanInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
 }
